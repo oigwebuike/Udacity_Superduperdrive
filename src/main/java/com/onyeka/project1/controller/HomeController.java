@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping
 public class HomeController {
 
     private static List<Note> notes = new ArrayList<>();
@@ -45,15 +45,22 @@ public class HomeController {
 
      */
 
+    @GetMapping("home")
+    public String homeView(Model model, String noteTitle){
 
+        noteService.getNote(noteTitle);
 
+        model.addAttribute("notes", noteService.getNotes());
 
-
-    @GetMapping(value = {"home"})
-    public String homeView(){
 
         return "home";
     }
+
+
+
+
+
+
 /*
 
       @PostMapping(value = {"home"})

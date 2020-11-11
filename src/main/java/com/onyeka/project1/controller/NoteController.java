@@ -6,6 +6,7 @@ import com.onyeka.project1.model.User;
 import com.onyeka.project1.services.AuthenticationService;
 import com.onyeka.project1.services.NoteService;
 import com.onyeka.project1.services.UserService;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,31 +43,90 @@ public class NoteController {
      */
 
 
-    @GetMapping("home/Note")
-    public String createNote(Model model) {
+    @GetMapping("result")
+    public String result(Model model) {
+
         return "result";
     }
 
+    @GetMapping("note")
+    public String homeView(Model model, String noteTitle){
+
+        noteService.getNote(noteTitle);
+
+        model.addAttribute("notes", noteService.getNotes());
+
+
+        return "note";
+    }
+
     //@RequestMapping(value = "home", method = {RequestMethod.GET, RequestMethod.POST})
-    @PostMapping("home")
-    public String addNote(String noteTitle, String noteDescription, Model model){
+    @PostMapping("note")
+    public String addNote(Authentication authentication, String noteTitle, String noteDescription, Model model, Note note){
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userService.getUser(username);
-        user.setUserId(user.getUserId());
-        Note note = new Note();
-        note.setUserId(user.getUserId());
-        note.setNoteTitle(noteTitle);
-        note.setNoteDescription(noteDescription);
+        Integer userId = user.getUserId();
 
-        noteService.addNote(note);
 
-        List<Note> notes = noteService.getNotes();
 
-        model.addAttribute("notes", notes);
-        return "home";
+        this.noteService.addNote(new Note(userId, note.getNoteTitle(), note.getNoteDescription()));
+
+        //List<Note> notes = noteService.getNotes();
+
+
+        model.addAttribute("notes", noteService.getNotes());
+        //System.out.println(userId);
+        //System.out.println(note.getNoteId());
+
+
+        return "note";
     }
+    @RequestMapping(value = "delete/{noteId}", method = {RequestMethod.DELETE, RequestMethod.GET})
+    public String deleteNote(@PathVariable Integer noteId, Model model, String noteTitle){
+
+        //this.noteService.getNote(noteTitle);
+        Note note = this.noteService.getNote(noteTitle);
+
+        model.addAttribute("note", note);
+        this.noteService.deleteNote(noteId);
+
+        return "result";
+    }
+
+
+
+
+
+    @RequestMapping(value = "edit", method = {RequestMethod.GET, RequestMethod.PUT})
+    public String editNote(Authentication auth, String noteTitle, String noteDescription, Model model){
+
+
+       Note note = this.noteService.getNote(noteTitle);
+       Integer noteId = note.getNoteId();
+
+       if(noteId == null){
+
+           String username = auth.getName();
+           User user = userService.getUser(username);
+           Integer userId = user.getUserId();
+           this.noteService.addNote(note);
+       }
+       else{
+           this.noteService.editNote(note);
+
+
+       }
+
+
+        model.addAttribute("note", note);
+
+        return "note";
+    }
+
+
+
 
         /*
     @PostMapping("home/Note")

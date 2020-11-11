@@ -1,33 +1,31 @@
 package com.onyeka.project1.model;
 
+import java.util.Objects;
+
 public class Note {
 
     private Integer noteId;
+    private static Integer nextId = 1;
+
     private Integer userId;
     private String noteTitle;
     private String noteDescription;
 
-    public Note(Integer noteId, Integer userId, String noteTitle, String noteDescription) {
-        this.noteId = noteId;
+    public Note(Integer userId, String noteTitle, String noteDescription) {
+        this.noteId = nextId;
         this.userId = userId;
         this.noteTitle = noteTitle;
         this.noteDescription = noteDescription;
+        nextId++;
     }
 
     public Note() {
 
     }
 
-    public Note(Integer noteId) {
-        this.noteId = noteId;
-    }
 
-    public int getNoteId() {
+    public Integer getNoteId() {
         return noteId;
-    }
-
-    public void setNoteId(int noteId) {
-        this.noteId = noteId;
     }
 
     public String getNoteDescription() {
@@ -54,5 +52,16 @@ public class Note {
         this.noteTitle = noteTitle;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return noteId.equals(note.noteId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(noteId);
+    }
 }

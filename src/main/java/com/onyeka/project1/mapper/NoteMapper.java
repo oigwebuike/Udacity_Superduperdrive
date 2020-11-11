@@ -2,10 +2,7 @@ package com.onyeka.project1.mapper;
 
 import com.onyeka.project1.model.Note;
 import com.onyeka.project1.model.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,8 +21,11 @@ public interface NoteMapper {
     @Options(useGeneratedKeys = true, keyProperty = "noteId")
     Integer addNote(Note note);
 
-    @Select("SELECT * FROM NOTES WHERE noteid = #{noteId}")
-    void deleteNote(int noteId);
+    @Delete("DELETE FROM NOTES WHERE noteid = #{noteId}")
+    void deleteNote(Integer noteId);
+
+    @Update("UPDATE NOTES SET notetitle = #{noteTitle}, notedescription = #{noteDescription}")
+    Integer update(Note note);
 
 
 
